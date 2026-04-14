@@ -246,24 +246,37 @@ def health_check():
     })
 
 
+# Initialize app on startup (for both local and gunicorn)
+def init_app():
+    """Initialize app with initial data and scheduler"""
+    try:
+        # Initial price fetch with timeout
+        update_all_prices()
+    except Exception as e:
+        print(f"⚠️  Warning: Could not fetch initial prices: {e}")
+        # App can still start without data
+    
+    try:
+        # Background scheduler for updates
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(func=update_all_prices, trigger="interval", seconds=60)
+        scheduler.start()
+        atexit.register(lambda: scheduler.shutdown())
+        print("✅ Background updates ενεργοποιημένα (κάθε 60 δευτερόλεπτα)")
+    except Exception as e:
+        print(f"⚠️  Warning: Could not start scheduler: {e}")
+
+# Initialize on import (needed for gunicorn)
+try:
+    init_app()
+except Exception as e:
+    print(f"⚠️  Warning during app initialization: {e}")
+
 
 if __name__ == '__main__':
     print("🚀 ATHEX Live Server - Ξεκίνηση...")
     print("="*50)
-    
-    # Initial price fetch
-    print("\n⏳ Αρχική λήψη τιμών...")
-    update_all_prices()
-    
-    # Background scheduler: updates every 60 seconds
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=update_all_prices, trigger="interval", seconds=60)
-    scheduler.start()
-    print("✅ Background updates ενεργοποιημένα (κάθε 60 δευτερόλεπτα)\n")
-    
-    atexit.register(lambda: scheduler.shutdown())
-    
-    print("📊 Server τρέχει στο: http://127.0.0.1:5000/api/prices")
+    print("📊 Server τρέχει στο: http://127.0.0.1:5000")
     print("⏹️  Για σταμάτημα: CTRL+C\n")
     
-    app.run(port=5000, debug=False, use_reloader=False, threaded=True)
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False, threaded=True)
