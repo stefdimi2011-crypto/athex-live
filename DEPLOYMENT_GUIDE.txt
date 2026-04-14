@@ -1,0 +1,110 @@
+🚀 ATHEX LIVE - CLOUD DEPLOYMENT GUIDE
+========================================
+
+Ακολούθησε αυτά τα βήματα για να ανεβάσεις το site σε cloud (δωρεάν)
+
+ΒΗΜΑ 1️⃣ : GitHub Setup
+=======================
+
+1. Πήγαινε στο: https://github.com/signup (δημιούργησε λογαριασμό αν δεν έχεις)
+
+2. Δημιούργησε νέο repository:
+   - Πήγαινε: https://github.com/new
+   - Repository name: athex-live
+   - Description: ATHEX Live Stock Market Dashboard
+   - Public: ✓
+   - Click "Create repository"
+
+3. Τερματικό - Εκτέλεσε αυτές τις εντολές:
+   (Αντικατάστησε YOUR_USERNAME με το δικό σου GitHub username)
+
+   git branch -M main
+   git remote add origin https://github.com/YOUR_USERNAME/athex-live.git
+   git push -u origin main
+
+4. ✅ Έτοιμο! Τώρα τα αρχεία σου είναι στο GitHub
+
+---
+
+ΒΗΜΑ 2️⃣ : Render Deployment
+============================
+
+1. Πήγαινε στο: https://render.com
+
+2. Click "Sign up with GitHub" (και έκανε login στο GitHub σου)
+
+3. Μετά από login, click "New +" → "Web Service"
+
+4. Επέλεξε το repository: athex-live
+
+5. Συμπλήρωσε τα fields:
+   Name: athex-live
+   Region: Frankfurt (EU) ή Singapore (κοντά σας)
+   Branch: main
+   Runtime: Python 3
+   Build Command: pip install -r requirements.txt  
+   Start Command: gunicorn ai_studio_code:app
+
+6. Scroll down → Add Environment Variable:
+   KEY: PYTHON_VERSION
+   VALUE: 3.11.8
+
+7. Click "Create Web Service"
+
+8. ⏳ Περίμενε 2-3 λεπτά για την αναπτύξη
+
+9. 🎉 Όταν τελειώσει, θα δεις ένα URL όπως:
+   https://athex-live-xxxx.onrender.com
+
+---
+
+ΒΗΜΑ 3️⃣ : Δοκιμή & Sharing
+============================
+
+✅ Άνοιξε το URL σας σε browser
+✅ Τα δεδομένα ενημερώνονται κάθε 60 δευτερόλεπτα
+✅ Μοιραστείτε το link με φίλους!
+
+📱 Προσβασία:
+ - Desktop: https://athex-live-xxxx.onrender.com
+ - Κινητό: Πατήστε το ίδιο link από κινητό
+ - 24/7: Δουλεύει πάντα! (δεν χρειάζεται να ξεκινήσετε Python)
+
+---
+
+❓ TROUBLESHOOTING
+==================
+
+Q: "Deploy failed" στο Render
+A: Ελέγξτε ότι υπάρχει Procfile και runtime.txt στο repo
+
+Q: "ModuleNotFoundError" 
+A: Βεβαιωθείτε ότι requirements.txt έχει gunicorn
+
+Q: Δεν ανδυτικών δεδομένα
+A: Ελέγξτε το logs στο Render dashboard → Logs
+
+---
+
+💡 ΕΠΌΜΕΝΑ ΒΉΜΑΤΑ
+====================
+
+1. Εάν θέλετε custom domain: https://docs.render.com/custom-domains
+2. Εάν θέλετε email alerts: Προσθέστε email service
+3. Εάν θέλετε database: Χρησιμοποιήστε PostgreSQL (Render έχει δωρεάν tier)
+
+---
+
+ΧΡΕΙΆΖΕΣΤΕ ΒΟΉΘΕΙΑ;
+====================
+
+Ενημέρωση GitHub:
+1. git add .
+2. git commit -m "Update message"
+3. git push
+
+Render θα ανανεώσει αυτόματα σας! 🚀
+
+---
+
+✅ Έτοιμο! Καλή τύχη! 🎉
