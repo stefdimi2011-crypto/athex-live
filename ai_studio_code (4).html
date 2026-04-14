@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>ATHEX Pro v7 - Live Capital.gr</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#04050d;--ink:#070912;--deep:#0a0e1c;--well:#0e1427;--surf:#131a2f;--up:#172038;
+  --b0:#182236;--b1:#1e2d48;--b2:#28395c;--b3:#364d70;
+  --a:#12eae0;--a2:#0dc8bf;--ag:rgba(18,234,224,.08);
+  --bull:#00f07c;--bear:#ff3256;--gold:#f5c30a;--lav:#b084ff;--sky:#3cc8f5;
+  --bullg:rgba(0,240,124,.09);--bearg:rgba(255,50,86,.09);--goldg:rgba(245,195,10,.09);
+  --t0:#fff;--t1:#d4e4ff;--t2:#6a88b8;--t3:#344b6c;--t4:#192438;
+  --ff:'Plus Jakarta Sans',sans-serif;--fm:'JetBrains Mono',monospace;--fh:'Space Grotesk',sans-serif;
+  --r:16px;--r2:12px;
+}
+body.light{--bg:#f0f4fa;--ink:#e8edf8;--deep:#dde3f0;--well:#d5dced;--surf:#fff;--up:#eef2fc;--b0:#c8d3e8;--b1:#b8c6de;--b2:#9aaece;--b3:#7a94b8;--t0:#0a0e1c;--t1:#1a2540;--t2:#3a5070;--t3:#7a94b8;--t4:#b8c6de}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:var(--ff);background:var(--bg);color:var(--t1);min-height:100vh;padding-bottom:80px;transition:background .2s,color .2s}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(18,234,224,.004)1px,transparent 1px),linear-gradient(90deg,rgba(18,234,224,.004)1px,transparent 1px);background-size:48px 48px}
+.z{position:relative;z-index:1}
+.bull{color:var(--bull)}.bear{color:var(--bear)}.gold{color:var(--gold)}.acc{color:var(--a)}
+.row{display:flex;align-items:center}.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pad{padding:13px;display:flex;flex-direction:column;gap:11px;padding-bottom:16px}
+.sec{font-family:var(--fm);font-size:.44rem;letter-spacing:3px;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--b1),transparent)}
+.hdr{position:sticky;top:0;z-index:600;background:rgba(4,5,13,.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1)}
+body.light .hdr{background:rgba(240,244,250,.97)}
+.hdr-in{display:flex;align-items:center;gap:10px;padding:10px 14px 0}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--a),var(--lav));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;animation:gp 3s ease-in-out infinite}
+@keyframes gp{0%,100%{box-shadow:0 0 16px rgba(18,234,224,.25)}50%{box-shadow:0 0 28px rgba(18,234,224,.45)}}
+.logo-t{font-family:var(--fh);font-size:1.1rem;font-weight:700;color:var(--t0)}
+.logo-s{font-family:var(--fm);font-size:.38rem;letter-spacing:3px;color:var(--t3);display:block;margin-top:1px}
+.hdr-r{display:flex;align-items:center;gap:7px;margin-left:auto}
+.ibtn{width:30px;height:30px;border-radius:8px;background:var(--surf);border:1px solid var(--b1);color:var(--a);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.idx{display:flex;gap:5px;padding:7px 14px 8px;overflow:hidden}
+.pill{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:20px;background:var(--surf);border:1px solid var(--b1);font-family:var(--fm);font-size:.5rem;white-space:nowrap;flex-shrink:0}
+.tw{overflow:hidden;border-top:1px solid rgba(30,44,72,.4);position:relative}
+.tw::before,.tw::after{content:'';position:absolute;top:0;bottom:0;width:24px;z-index:2;pointer-events:none}
+.tw::before{left:0;background:linear-gradient(90deg,rgba(4,5,13,.98),transparent)}
+.tw::after{right:0;background:linear-gradient(-90deg,rgba(4,5,13,.98),transparent)}
+body.light .tw::before{background:linear-gradient(90deg,rgba(240,244,250,.98),transparent)}
+body.light .tw::after{background:linear-gradient(-90deg,rgba(240,244,250,.98),transparent)}
+.tt{display:flex;padding:5px 0;animation:tg 90s linear infinite;width:max-content}
+.tt:hover{animation-play-state:paused}
+@keyframes tg{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{display:flex;align-items:center;gap:5px;padding:0 11px;border-right:1px solid var(--b1);cursor:pointer;font-family:var(--fm);font-size:.52rem;white-space:nowrap}
+.sbar{font-family:var(--fm);font-size:.52rem;padding:5px 14px;background:rgba(7,9,18,.9);border-bottom:1px solid rgba(30,44,72,.35);display:flex;align-items:center;gap:6px;min-height:22px}
+body.light .sbar{background:rgba(220,230,245,.9)}
+.ok{color:var(--bull)}.ld{color:var(--a)}.wn{color:var(--gold)}
+.spin{width:6px;height:6px;border:1.5px solid currentColor;border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.tabs{width:100%;overflow-x:auto;scrollbar-width:none;background:var(--ink);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:500}
+.tabs::-webkit-scrollbar{display:none}
+.tabs-i{display:flex;width:max-content;min-width:100%}
+.tab{flex-shrink:0;padding:10px 14px;font-size:.64rem;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--t2)}.tab.on{color:var(--a);border-bottom-color:var(--a)}
+.view{display:none;animation:vi .2s ease}
+.view.on{display:block}
+@keyframes vi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden}
+.card-h{padding:9px 13px;background:var(--up);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.cht{font-family:var(--fm);font-size:.44rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase}
+.card-b{padding:12px}
+.cbox{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r);padding:12px}
+.clbl{font-family:var(--fm);font-size:.42rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.clbl::before{content:'';width:3px;height:9px;border-radius:2px;background:var(--a);opacity:.55}
+.badge{font-family:var(--fm);font-size:.42rem;padding:2px 6px;border-radius:4px;white-space:nowrap;font-weight:600}
+.b-e{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--t3)}
+.b-a{background:var(--ag);border:1px solid rgba(18,234,224,.2);color:var(--a2)}
+.b-buy{background:var(--bullg);border:1px solid rgba(0,240,124,.25);color:var(--bull)}
+.b-hold{background:var(--goldg);border:1px solid rgba(245,195,10,.25);color:var(--gold)}
+.b-sell{background:var(--bearg);border:1px solid rgba(255,50,86,.25);color:var(--bear)}
+.fld{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.fld label{font-family:var(--fm);font-size:.42rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase}
+.fin{background:var(--deep);border:1px solid var(--b2);color:var(--t1);border-radius:9px;padding:9px 11px;font-size:.86rem;font-family:var(--fm);width:100%;outline:none;transition:border-color .16s;-webkit-appearance:none}
+.fin:focus{border-color:var(--a)}
+.btn-p{background:linear-gradient(135deg,var(--a),var(--a2));color:var(--bg);border:none;border-radius:9px;padding:10px 14px;font-size:.7rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.btn-g{background:linear-gradient(135deg,#c9900a,var(--gold));color:#000;border:none;border-radius:9px;padding:9px 13px;font-size:.68rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.btn-lav{background:linear-gradient(135deg,var(--lav),#8b5cf6);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:.68rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.krow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r);padding:11px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--b2)}
+.kpi.kp::before{background:linear-gradient(90deg,var(--bull),transparent)}.kpi.kp{border-color:rgba(0,240,124,.15)}
+.kpi.kn::before{background:linear-gradient(90deg,var(--bear),transparent)}.kpi.kn{border-color:rgba(255,50,86,.15)}
+.kpi.ka::before{background:linear-gradient(90deg,var(--a),transparent)}.kpi.ka{border-color:rgba(18,234,224,.15)}
+.kl{font-family:var(--fm);font-size:.4rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:5px}
+.kv{font-family:var(--fh);font-size:1.12rem;font-weight:700;line-height:1}
+.ks{font-family:var(--fm);font-size:.45rem;color:var(--t3);margin-top:4px}
+.hero{background:linear-gradient(155deg,#0a1628,#0e1c38,#07101c);border:1px solid var(--b2);border-radius:var(--r);position:relative;overflow:hidden;cursor:pointer;transition:transform .2s}
+body.light .hero{background:linear-gradient(155deg,#dde8f8,#c8d8f0,#e8f0fa)}
+.hero:hover{transform:translateY(-1px)}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 70% at 90% -5%,rgba(18,234,224,.07),transparent 55%);pointer-events:none}
+.hero-line{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a) 30%,var(--lav) 70%,transparent);opacity:.45}
+.hero-body{padding:16px 14px 12px}
+.hero-sym{font-family:var(--fh);font-size:1.3rem;font-weight:700;color:var(--a);letter-spacing:2px;line-height:1}
+.hero-co{font-size:.62rem;color:var(--t2);margin-top:3px}
+.hero-chips{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.hero-price{font-family:var(--fh);font-size:2.6rem;font-weight:700;letter-spacing:-1px;line-height:1}
+.hero-chg{font-size:.78rem;font-weight:700;margin-top:4px}
+.hero-t{font-family:var(--fm);font-size:.4rem;color:var(--t3);margin-top:3px}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--b1)}
+.hs{padding:8px 10px;border-right:1px solid var(--b1)}.hs:last-child{border-right:none}
+.hs-l{font-family:var(--fm);font-size:.37rem;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin-bottom:3px}
+.hs-v{font-family:var(--fh);font-size:.75rem;font-weight:600;color:var(--t1)}
+.srow{display:flex;align-items:center;margin:0 13px 6px;background:var(--surf);border:1px solid var(--b1);border-radius:var(--r2);padding:10px 12px;cursor:pointer;transition:all .16s;position:relative;overflow:hidden}
+.srow::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.srow.bull-r::before{background:var(--bull)}.srow.bear-r::before{background:var(--bear)}
+.srow:hover{background:var(--up);transform:translateX(2px)}
+.wl-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surf);border:1px solid var(--b1);border-radius:var(--r2);cursor:pointer;transition:all .15s;margin-bottom:6px}
+.wl-item:hover{background:var(--up);transform:translateX(2px)}
+.wl-item.starred{border-left:3px solid var(--gold)}
+.ai-wrap{background:linear-gradient(150deg,#0c1828,#101e3a,#080f1c);border:1px solid var(--b2);border-radius:18px;padding:16px 14px;position:relative;overflow:hidden}
+body.light .ai-wrap{background:linear-gradient(150deg,#dde8f8,#c8d8f0)}
+.ai-wrap::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--lav) 30%,var(--a) 70%,transparent);opacity:.5}
+.sf{margin-bottom:8px}
+.sf-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.sf-l{font-family:var(--fm);font-size:.4rem;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase}
+.sf-v{font-family:var(--fm);font-size:.48rem;font-weight:600}
+.sf-bar{height:4px;background:var(--b1);border-radius:2px;overflow:hidden}
+.sf-fill{height:100%;border-radius:2px;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.sc-b{background:rgba(0,240,124,.06);border:1px solid rgba(0,240,124,.2);border-radius:11px;padding:11px;text-align:center}
+.sc-n{background:rgba(18,234,224,.06);border:1px solid rgba(18,234,224,.2);border-radius:11px;padding:11px;text-align:center}
+.sc-r{background:rgba(255,50,86,.06);border:1px solid rgba(255,50,86,.2);border-radius:11px;padding:11px;text-align:center}
+.sc-l{font-family:var(--fm);font-size:.37rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:4px}
+.sc-p{font-family:var(--fh);font-size:1.05rem;font-weight:700}
+.sc-pct{font-family:var(--fm);font-size:.48rem;font-weight:600;margin-top:2px}
+.sc-pr{font-family:var(--fm);font-size:.38rem;color:var(--t3);margin-top:3px}
+.ti-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ti-c{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r2);padding:10px}
+.ti-nm{font-family:var(--fm);font-size:.4rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase}
+.ti-sig{font-family:var(--fm);font-size:.42rem;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:1px}
+.ti-sig.buy{background:rgba(0,240,124,.12);color:var(--bull);border:1px solid rgba(0,240,124,.2)}
+.ti-sig.sell{background:rgba(255,50,86,.1);color:var(--bear);border:1px solid rgba(255,50,86,.2)}
+.ti-sig.neu{background:rgba(245,195,10,.1);color:var(--gold);border:1px solid rgba(245,195,10,.2)}
+.ti-val{font-family:var(--fh);font-size:.92rem;font-weight:700;margin-bottom:2px}
+.ti-sub{font-family:var(--fm);font-size:.44rem;color:var(--t3);margin-bottom:4px;line-height:1.4}
+.ti-bar{height:4px;background:var(--b1);border-radius:2px;overflow:hidden}
+.ti-fill{height:100%;border-radius:2px;transition:width .9s cubic-bezier(.16,1,.3,1)}
+.zones{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r);padding:12px}
+.zone-i{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(30,44,72,.3)}
+.zone-i:last-child{border-bottom:none}
+.zone-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.tf-banner{border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(79,142,247,.07),rgba(79,142,247,.03));border:1px solid rgba(79,142,247,.25)}
+.conf-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.conf-item:last-child{margin-bottom:0}
+.conf-lbl{font-family:var(--fm);font-size:.46rem;color:var(--t2);width:90px;flex-shrink:0}
+.conf-bar{flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden}
+.conf-fill{height:100%;border-radius:3px;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.rb-row{display:flex;gap:4px}
+.rb{font-family:var(--fm);font-size:.46rem;padding:4px 8px;border-radius:6px;cursor:pointer;border:1px solid var(--b1);color:var(--t3);background:transparent;transition:all .14s}
+.rb.on{border-color:var(--a);color:var(--a);background:rgba(18,234,224,.07)}
+.bt-stat{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r);padding:11px;text-align:center}
+.bt-stat-l{font-family:var(--fm);font-size:.38rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:5px}
+.bt-stat-v{font-family:var(--fh);font-size:1.15rem;font-weight:700;line-height:1}
+.bt-stat-s{font-family:var(--fm);font-size:.42rem;color:var(--t3);margin-top:3px}
+.cmp-sym-card{border-radius:var(--r);padding:12px;text-align:center}
+.cmp-sym-card.a{background:rgba(18,234,224,.07);border:1px solid rgba(18,234,224,.25)}
+.cmp-sym-card.b{background:rgba(176,132,255,.07);border:1px solid rgba(176,132,255,.25)}
+.corr-cell{border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.38rem;font-weight:600;cursor:pointer;transition:transform .15s;aspect-ratio:1}
+.corr-cell:hover{transform:scale(1.1)}
+.sector-bar{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.sector-lbl{font-family:var(--fm);font-size:.42rem;color:var(--t2);width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sector-track{flex:1;height:6px;background:var(--b1);border-radius:3px;overflow:hidden}
+.sector-fill{height:100%;border-radius:3px;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.sector-pct{font-family:var(--fm);font-size:.44rem;font-weight:600;width:36px;text-align:right;flex-shrink:0}
+.port-hero{background:linear-gradient(150deg,#0b1a30,#0f2040,#070e1c);border:1px solid var(--b2);border-radius:var(--r);padding:18px 14px;position:relative;overflow:hidden}
+body.light .port-hero{background:linear-gradient(150deg,#dde8f8,#c8d8f0)}
+.port-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a) 40%,var(--lav) 60%,transparent);opacity:.4}
+.hc{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .16s;margin-bottom:8px}
+.hc:hover{border-color:var(--b2);transform:translateY(-1px)}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border-radius:var(--r);border:1px dashed var(--b2);background:transparent;font-size:.68rem;font-weight:600;color:var(--t3);cursor:pointer;transition:all .16s;width:100%}
+.add-btn:hover{border-color:var(--a);color:var(--a);background:var(--ag)}
+.al-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.as-c{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r);padding:12px;text-align:center}
+.tstb{flex:1;padding:7px 5px;border-radius:8px;text-align:center;cursor:pointer;font-size:.6rem;font-weight:600;background:var(--deep);border:1px solid var(--b1);color:var(--t3);transition:all .13s}
+.tstb.on-bull{background:rgba(0,240,124,.08);border-color:rgba(0,240,124,.3);color:var(--bull)}
+.tstb.on-bear{background:var(--bearg);border-color:rgba(255,50,86,.3);color:var(--bear)}
+.tstb.on-neu{background:var(--ag);border-color:rgba(18,234,224,.3);color:var(--a)}
+.al-item{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r2);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.al-item.above{border-left:3px solid var(--bull)}.al-item.below{border-left:3px solid var(--bear)}.al-item.pct{border-left:3px solid var(--a)}.al-item.fired{opacity:.45}
+.briefing-card{background:linear-gradient(145deg,#0d1830,#111e38,#090f20);border:1px solid var(--b2);border-radius:var(--r);overflow:hidden;position:relative}
+body.light .briefing-card{background:linear-gradient(145deg,#dde8f8,#c8d8f0)}
+.briefing-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lav),var(--a),var(--lav));opacity:.7}
+.pattern-card{background:var(--surf);border:1px solid var(--b1);border-radius:var(--r2);padding:12px;margin-bottom:8px;border-left:3px solid transparent;cursor:pointer;transition:all .16s}
+.pattern-card:hover{background:var(--up)}
+.pattern-card.bull-pat{border-left-color:var(--bull)}
+.pattern-card.bear-pat{border-left-color:var(--bear)}
+#aiBubble{position:fixed;bottom:20px;right:15px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--lav),var(--a));display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;z-index:810;box-shadow:0 4px 18px rgba(176,132,255,.45);animation:bp 3s ease-in-out infinite}
+@keyframes bp{0%,100%{box-shadow:0 4px 18px rgba(176,132,255,.45)}50%{box-shadow:0 4px 22px rgba(176,132,255,.6)}}
+#aiPanel{position:fixed;bottom:84px;right:15px;width:calc(100vw - 30px);max-width:390px;height:70vh;max-height:560px;background:var(--ink);border:1px solid var(--b2);border-radius:20px;z-index:811;display:flex;flex-direction:column;overflow:hidden;transform:scale(.88) translateY(18px);opacity:0;pointer-events:none;transition:transform .24s cubic-bezier(.16,1,.3,1),opacity .18s;box-shadow:0 14px 44px rgba(0,0,0,.6)}
+#aiPanel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.aip-hdr{padding:12px 13px;background:linear-gradient(135deg,rgba(176,132,255,.1),rgba(18,234,224,.06));border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.aip-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--lav),var(--a));display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.aip-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.aip-msgs::-webkit-scrollbar{width:2px}
+.aip-msgs::-webkit-scrollbar-thumb{background:var(--b2)}
+.msg{max-width:88%}
+.msg.bot{align-self:flex-start}.msg.usr{align-self:flex-end}
+.msg-b{padding:9px 12px;border-radius:14px;font-size:.8rem;line-height:1.65;white-space:pre-wrap}
+.msg.bot .msg-b{background:var(--surf);border:1px solid var(--b1);color:var(--t1);border-radius:4px 14px 14px 14px}
+.msg.usr .msg-b{background:linear-gradient(135deg,var(--lav),rgba(176,132,255,.7));color:#fff;border-radius:14px 4px 14px 14px}
+.msg-t{font-family:var(--fm);font-size:.33rem;color:var(--t3);margin-top:2px}
+.msg.usr .msg-t{text-align:right}
+.typing{display:flex;align-items:center;gap:4px;padding:8px 11px;background:var(--surf);border:1px solid var(--b1);border-radius:4px 14px 14px 14px;align-self:flex-start}
+.tdot{width:5px;height:5px;border-radius:50%;background:var(--a);animation:td 1.2s ease-in-out infinite}
+.tdot:nth-child(2){animation-delay:.2s}.tdot:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{opacity:.3;transform:scale(.8)}30%{opacity:1;transform:scale(1)}}
+.aip-inp-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--b1);flex-shrink:0;background:var(--well)}
+.aip-inp{flex:1;background:var(--surf);border:1px solid var(--b2);color:var(--t1);border-radius:10px;padding:9px 12px;font-family:var(--ff);font-size:.8rem;outline:none}
+.aip-inp:focus{border-color:var(--a)}
+.aip-send{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--lav),var(--a));border:none;color:var(--bg);font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.det-ov{position:fixed;inset:0;z-index:800;background:var(--bg);overflow-y:auto;transform:translateX(100%);transition:transform .26s cubic-bezier(.16,1,.3,1)}
+.det-ov.open{transform:translateX(0)}
+.det-hdr{position:sticky;top:0;z-index:10;padding:8px 14px 9px;background:rgba(4,5,13,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:11px}
+body.light .det-hdr{background:rgba(240,244,250,.96)}
+.det-back{width:32px;height:32px;border-radius:8px;background:var(--surf);border:1px solid var(--b2);color:var(--t1);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(6px)}
+.modal.open{opacity:1;pointer-events:all}
+.modal-s{background:var(--up);border:1px solid var(--b2);border-radius:20px 20px 0 0;padding:20px 17px 32px;width:100%;max-width:440px;transform:translateY(100%);transition:transform .26s cubic-bezier(.16,1,.3,1)}
+.modal.open .modal-s{transform:translateY(0)}
+.mh{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 14px}
+#toasts{position:fixed;bottom:90px;left:0;right:0;z-index:9999;pointer-events:none;display:flex;flex-direction:column-reverse;align-items:center;gap:5px;padding:0 13px}
+.toast{background:var(--up);border:1px solid var(--b2);border-radius:11px;padding:10px 15px;max-width:320px;width:100%;font-size:.66rem;text-align:center;pointer-events:auto;animation:tin .22s ease,tout .3s ease 3.5s forwards;font-family:var(--ff)}
+.toast.ok{border-color:rgba(0,240,124,.32);color:var(--bull)}.toast.wn{border-color:rgba(245,195,10,.32);color:var(--gold)}.toast.in{border-color:rgba(18,234,224,.32);color:var(--a)}
+@keyframes tin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tout{from{opacity:1}to{opacity:0}}
+th{font-family:var(--fm);font-size:.38rem;letter-spacing:1.5px;color:var(--t3);padding:7px 8px;border-bottom:1px solid var(--b1);text-align:left;font-weight:400}
+th:not(:first-child){text-align:right}
+td{padding:7px 8px;border-bottom:1px solid rgba(30,44,72,.3);font-family:var(--fm);font-size:.58rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td:not(:first-child){text-align:right}
+tr:last-child td{border-bottom:none}
+::-webkit-scrollbar{width:2px;height:2px}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:1px}
+</style>
+</head>
+<body>
+<div id="toasts"></div>
+
+<div class="det-ov" id="detOv">
+  <div class="det-hdr">
+    <button class="det-back" onclick="closeDet()">←</button>
+    <div style="flex:1;min-width:0"><div id="dSym" style="font-family:var(--fh);font-size:1rem;font-weight:700;color:var(--a);letter-spacing:1px">–</div><div id="dCo" style="font-size:.6rem;color:var(--t2);margin-top:1px">–</div></div>
+    <div style="text-align:right;flex-shrink:0"><div id="dPrice" style="font-family:var(--fh);font-size:1.3rem;font-weight:700">–</div><div id="dChg" style="font-size:.64rem;font-weight:600;margin-top:2px">–</div></div>
+  </div>
+  <div class="pad" id="detBody"></div>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeM()">
+  <div class="modal-s">
+    <div class="mh"></div>
+    <div style="font-family:var(--fh);font-size:.92rem;font-weight:700;color:var(--t0);margin-bottom:13px">Προσθήκη Θέσης</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px">
+      <div style="grid-column:1/-1"><div style="font-family:var(--fm);font-size:.4rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Μετοχή</div><select id="mSym" class="fin" style="font-family:var(--ff)"></select></div>
+      <div class="fld"><label>Τιμή Αγοράς (€)</label><input id="mBuy" type="number" step="0.01" placeholder="0.00" class="fin" inputmode="decimal"/></div>
+      <div class="fld"><label>Τεμάχια</label><input id="mQty" type="number" placeholder="0" class="fin" inputmode="numeric"/></div>
+    </div>
+    <button class="btn-p" style="width:100%;margin-bottom:7px" onclick="addHolding()">Προσθήκη</button>
+    <button style="width:100%;background:transparent;color:var(--t3);border:1px solid var(--b1);border-radius:10px;padding:9px;font-family:var(--ff);font-size:.66rem;cursor:pointer" onclick="closeM()">Ακύρωση</button>
+  </div>
+</div>
+
+<div id="aiBubble" onclick="toggleAI()">🤖</div>
+<div id="aiPanel">
+  <div class="aip-hdr">
+    <div class="aip-av">🤖</div>
+    <div style="flex:1"><div style="font-family:var(--fh);font-size:.78rem;font-weight:700;color:var(--t0)">AI Χρηματιστής</div><div style="font-family:var(--fm);font-size:.36rem;color:var(--a);letter-spacing:1.5px;margin-top:1px">ATHEX PRO v7 Live</div></div>
+    <button style="width:23px;height:23px;border-radius:7px;background:var(--surf);border:1px solid var(--b1);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.58rem;flex-shrink:0" onclick="toggleAI()">✕</button>
+  </div>
+  <div style="display:flex;gap:4px;padding:5px 7px;border-bottom:1px solid var(--b1);overflow-x:auto;scrollbar-width:none;flex-shrink:0">
+    <button onclick="g('aiInp').value='Ποιες μετοχές θα ανέβουν 20%+;';aiSend()" style="padding:3px 8px;border-radius:6px;font-size:.5rem;background:var(--surf);border:1px solid var(--b1);color:var(--a);cursor:pointer;white-space:nowrap;flex-shrink:0">🚀 +20%</button>
+    <button onclick="g('aiInp').value='Top 5 αγορές τώρα';aiSend()" style="padding:3px 8px;border-radius:6px;font-size:.5rem;background:var(--surf);border:1px solid var(--b1);color:var(--bull);cursor:pointer;white-space:nowrap;flex-shrink:0">▲ Top Picks</button>
+    <button onclick="g('aiInp').value='Ανάλυσε μου το χαρτοφυλάκιό μου';aiSend()" style="padding:3px 8px;border-radius:6px;font-size:.5rem;background:var(--surf);border:1px solid var(--b1);color:var(--lav);cursor:pointer;white-space:nowrap;flex-shrink:0">💼 Portfolio</button>
+  </div>
+  <div class="aip-msgs" id="aiMsgs"></div>
+  <div class="aip-inp-row">
+    <input class="aip-inp" id="aiInp" placeholder="Ρώτα για επενδύσεις..." onkeydown="if(event.key==='Enter')aiSend()"/>
+    <button class="aip-send" onclick="aiSend()">➤</button>
+  </div>
+</div>
+
+<div class="hdr z">
+  <div class="hdr-in">
+    <div class="logo">📈</div>
+    <div style="margin-left:6px"><div class="logo-t">ATHEX Pro</div><div class="logo-s">Live Capital.gr Edition · v7</div></div>
+    <div class="hdr-r">
+      <span style="font-family:var(--fm);font-size:.62rem;color:var(--t3);letter-spacing:1.5px" id="clkEl">--:--</span>
+      <button class="ibtn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+      <button class="ibtn" onclick="updateLivePrices()" title="Ανανέωση Live">↻</button>
+    </div>
+  </div>
+  <div class="idx z">
+    <div class="pill"><span style="color:var(--t3)">ΓΔ</span><span class="bull" style="font-weight:600;margin-left:3px" id="idxGD">1.421,8</span></div>
+    <div class="pill"><span style="color:var(--t3)">FTSE20</span><span class="bull" style="font-weight:600;margin-left:3px" id="idxFT20">861,2</span></div>
+  </div>
+  <div class="tw z"><div class="tt" id="tapeEl"></div></div>
+</div>
+<div class="sbar z" id="sbarEl"><span class="spin ld"></span><span class="ld">Σύνδεση με Capital.gr...</span></div>
+
+<div class="tabs z">
+  <div class="tabs-i">
+    <div class="tab on" data-t="dash" onclick="gT('dash')">📊 Πίνακας</div>
+    <div class="tab" data-t="watchlist" onclick="gT('watchlist')">⭐ Watchlist</div>
+    <div class="tab" data-t="pred" onclick="gT('pred')">🤖 Προβλέψεις</div>
+    <div class="tab" data-t="port" onclick="gT('port')">💼 Portfolio</div>
+    <div class="tab" data-t="market" onclick="gT('market')">🏛 Αγορά</div>
+    <div class="tab" data-t="news" onclick="gT('news')">📰 Νέα</div>
+    <div class="tab" data-t="alerts" onclick="gT('alerts')">🔔 Alerts</div>
+  </div>
+</div>
+
+<div class="view on" id="view-dash">
+<div class="pad">
+  <div class="hero" id="heroCard" onclick="openDet('MTLN')">
+    <div class="hero-line"></div>
+    <div class="hero-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <div>
+          <div class="hero-sym">MTLN</div>
+          <div class="hero-co">Metlen Energy &amp; Metals SA</div>
+          <div class="hero-chips">
+            <span class="badge b-e">LSE · LON</span>
+            <span class="badge b-a">Ενέργεια · Μέταλλα</span>
+            <span class="badge b-buy" id="heroRec">▲ ΑΓΟΡΑ</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="hero-price bull" id="vP">–</div>
+          <div class="hero-chg bull" id="vC">–</div>
+          <div class="hero-t" id="vT">–</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-l">Κλείσιμο</div><div class="hs-v" id="hPrev">–</div></div>
+      <div class="hs"><div class="hs-l">Εύρος</div><div class="hs-v" id="hRange">–</div></div>
+      <div class="hs"><div class="hs-l">52W</div><div class="hs-v" id="h52w">–</div></div>
+      <div class="hs"><div class="hs-l">Mkt Cap</div><div class="hs-v" id="hCap">–</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><span class="cht">Θέση Επένδυσης</span></div>
+    <div class="card-b">
+      <div class="row" style="gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div class="fld"><label>Τιμή Αγοράς (€)</label><input id="inBuy" type="number" step="0.0001" value="35.2436" oninput="recalc()" class="fin"/></div>
+        <div class="fld"><label>Τεμάχια</label><input id="inQty" type="number" value="25" oninput="recalc()" class="fin"/></div>
+        <button class="btn-g" onclick="updateLivePrices()">↻ Live</button>
+      </div>
+    </div>
+  </div>
+  <div class="krow">
+    <div class="kpi ka"><div class="kl">Αξία Θέσης</div><div class="kv acc" id="kvV">–</div><div class="ks" id="kvC">–</div></div>
+    <div class="kpi" id="kPnl"><div class="kl">Κέρδος/Ζημία</div><div class="kv" id="kvP">–</div><div class="ks" id="kvS">–</div></div>
+    <div class="kpi" id="kPct"><div class="kl">Απόδοση</div><div class="kv" id="kvPc">–</div><div class="ks">από αγορά</div></div>
+  </div>
+  <div class="g2">
+    <div class="cbox"><div class="clbl">Κόστος vs Αξία</div><canvas id="cBar" height="120"></canvas></div>
+    <div class="cbox"><div class="clbl">P&amp;L Κατανομή</div><canvas id="cPie" height="120"></canvas></div>
+  </div>
+</div>
+</div>
+
+<div class="view" id="view-watchlist">
+<div class="pad">
+  <div class="card">
+    <div class="card-b" style="display:flex;gap:8px;align-items:flex-end">
+      <div class="fld"><label>Προσθήκη Μετοχής</label><select id="wlSel" class="fin"></select></div>
+      <button class="btn-p" onclick="addWL()">＋ Watchlist</button>
+    </div>
+  </div>
+  <div id="wlCon"></div>
+</div>
+</div>
+
+<div class="view" id="view-pred">
+<div class="pad">
+  <div class="card">
+    <div class="card-b">
+      <div class="row" style="gap:10px;margin-bottom:10px">
+        <div class="fld"><label>Μετοχή</label><select id="predSel" class="fin" onchange="predSym=this.value;runPred()"></select></div>
+      </div>
+      <div id="predInfoBar" style="background:var(--deep);padding:10px;border-radius:9px;display:flex;justify-content:space-between"></div>
+    </div>
+  </div>
+  <div class="ai-wrap">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+       <div style="font-weight:700;color:var(--t0)" id="aiTitle">Τεχνική Ανάλυση</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:15px">
+       <div style="position:relative;width:100px;height:60px">
+          <svg viewBox="0 0 110 65" fill="none" width="100%" height="100%">
+             <path d="M10 58 A45 45 0 0 1 100 58" stroke="#1e2d48" stroke-width="9" stroke-linecap="round" fill="none"/>
+             <line id="gNeedle" x1="55" y1="58" x2="55" y2="22" stroke="white" stroke-width="2" style="transform-origin:55px 58px;transition:transform 1s" />
+          </svg>
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center">
+             <span id="scoreNum" style="font-size:1.5rem;font-weight:700">--</span>
+          </div>
+       </div>
+       <div id="scoreDetails" style="flex:1"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="view" id="view-port">
+<div class="pad">
+  <div class="port-hero">
+    <div style="font-size:.42rem;color:var(--t3);text-transform:uppercase">Συνολική Αξία</div>
+    <div style="font-size:2.2rem;font-weight:700;color:var(--t0)" id="psT">€ –</div>
+    <div style="display:flex;gap:15px;margin-top:10px">
+        <div><div style="font-size:.38rem;color:var(--t3)">ΚΟΣΤΟΣ</div><div id="psC" style="font-weight:600">--</div></div>
+        <div><div style="font-size:.38rem;color:var(--t3)">P&L</div><div id="psP" style="font-weight:600">--</div></div>
+        <div><div style="font-size:.38rem;color:var(--t3)">ΑΠΟΔΟΣΗ</div><div id="psPc" style="font-weight:600">--</div></div>
+    </div>
+  </div>
+  <div id="holdEl"></div>
+  <button class="add-btn" onclick="openM()">＋ Προσθήκη Θέσης</button>
+</div>
+</div>
+
+<div class="view" id="view-market">
+<div class="pad">
+  <div id="mktCon"></div>
+</div>
+</div>
+
+<div class="view" id="view-news">
+<div class="pad">
+  <div class="card">
+    <div class="card-h"><span class="cht">Χρηματιστηριακά Νέα</span><span style="margin-left:auto;font-family:var(--fm);font-size:.4rem;color:var(--t3)" id="newsTime">--</span></div>
+    <div class="card-b" style="padding:6px">
+      <button class="btn-p" onclick="loadNews()" style="width:100%;margin-bottom:8px">↻ Ανανέωση Νέων</button>
+      <div id="newsCon" style="max-height:70vh;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="view" id="view-alerts">
+<div class="pad">
+  <div class="card">
+    <div class="card-b">
+        <div class="fld"><label>Μετοχή</label><select id="alSym" class="fin"></select></div>
+        <div class="fld"><label>Τιμή (€)</label><input id="alVal" type="number" step="0.01" class="fin"/></div>
+        <button class="btn-p" onclick="createAlert()">Δημιουργία Alert</button>
+    </div>
+  </div>
+  <div id="alertEl"></div>
+</div>
+</div>
+
+<script>
+var g=function(id){return document.getElementById(id);};
+var DB={
+  MTLN:{n:'Metlen Energy & Metals',s:'Ενέργεια/Μέταλλα',p:36.10,pr:35.80,lo:35.75,hi:36.50,w52:'33,00–57,73',cap:'4,96Δ',vol:'1,2Μ',cat:0,pe:9.2,pb:1.4,div:3.8,beta:1.12,why:'Live Update από Capital.gr',live:false},
+  ETE:{n:'Εθνική Τράπεζα',s:'Τράπεζες',p:9.34,pr:9.12,lo:9.10,hi:9.40,w52:'6,80–10,82',cap:'9,20Δ',vol:'3,1Μ',cat:0,pe:6.8,pb:0.9,div:4.2,beta:1.35,why:'Live Update από Capital.gr',live:false},
+  EUROB:{n:'Eurobank Ergasias',s:'Τράπεζες',p:2.46,pr:2.40,lo:2.42,hi:2.50,w52:'1,78–2,68',cap:'7,40Δ',vol:'4,2Μ',cat:0,pe:7.1,pb:1.0,div:3.6,beta:1.28,why:'Live Update από Capital.gr',live:false},
+  ALPHA:{n:'Alpha Bank',s:'Τράπεζες',p:1.98,pr:1.94,lo:1.95,hi:2.02,w52:'1,42–2,24',cap:'5,80Δ',vol:'5,4Μ',cat:0,pe:8.2,pb:0.8,div:2.8,beta:1.42,why:'Live Update από Capital.gr',live:false},
+  TPEIR:{n:'Τράπεζα Πειραιώς',s:'Τράπεζες',p:4.82,pr:4.71,lo:4.74,hi:4.88,w52:'3,40–5,52',cap:'5,60Δ',vol:'6,2Μ',cat:0,pe:5.9,pb:0.7,div:3.1,beta:1.55,why:'Live Update από Capital.gr',live:false},
+  OPAP:{n:'ΟΠΑΠ ΑΕ',s:'Gaming',p:16.82,pr:16.55,lo:16.60,hi:16.95,w52:'12,40–18,20',cap:'2,41Δ',vol:'820Κ',cat:0,pe:14.5,pb:3.2,div:6.8,beta:0.72,why:'Live Update από Capital.gr',live:false},
+  PPC:{n:'ΔΕΗ ΑΕ',s:'Κοινή Ωφέλεια',p:11.24,pr:11.40,lo:11.10,hi:11.45,w52:'8,60–13,80',cap:'3,12Δ',vol:'1,8Μ',cat:0,pe:11.2,pb:1.1,div:1.2,beta:0.88,why:'Live Update από Capital.gr',live:false},
+  ADMIE:{n:'ΑΔΜΗΕ Συμμετοχών',s:'Κοινή Ωφέλεια',p:2.68,pr:2.65,lo:2.64,hi:2.71,w52:'2,20–3,12',cap:'1,02Δ',vol:'650Κ',cat:0,pe:12.8,pb:1.4,div:5.2,beta:0.45,why:'Live Update από Capital.gr',live:false},
+  OTELE:{n:'ΟΤΕ ΑΕ',s:'Τηλεπικοινωνίες',p:14.80,pr:14.72,lo:14.65,hi:14.90,w52:'12,80–16,40',cap:'3,28Δ',vol:'920Κ',cat:0,pe:16.4,pb:2.8,div:4.5,beta:0.62,why:'Live Update από Capital.gr',live:false},
+  TITK:{n:'Τιτάν Τσιμέντα',s:'Υλικά',p:28.50,pr:28.90,lo:28.20,hi:28.80,w52:'22,40–34,60',cap:'1,84Δ',vol:'290Κ',cat:0,pe:13.6,pb:1.6,div:2.4,beta:0.95,why:'Live Update από Capital.gr',live:false},
+  LAMDA:{n:'Lamda Development',s:'Ακίνητα',p:7.42,pr:7.28,lo:7.30,hi:7.48,w52:'5,40–8,90',cap:'1,56Δ',vol:'430Κ',cat:0,pe:18.2,pb:2.1,div:0.8,beta:1.05,why:'Live Update από Capital.gr',live:false},
+  HTO:{n:'Ελληνικά Πετρέλαια',s:'Ενέργεια',p:8.62,pr:8.55,lo:8.50,hi:8.70,w52:'6,80–10,20',cap:'2,88Δ',vol:'780Κ',cat:0,pe:10.4,pb:1.2,div:5.8,beta:0.82,why:'Live Update από Capital.gr',live:false},
+  MYTIL:{n:'Mytilineos Holdings',s:'Ενέργεια/Μέταλλα',p:36.10,pr:35.80,lo:35.60,hi:36.50,w52:'28,40–42,80',cap:'4,30Δ',vol:'560Κ',cat:0,pe:8.8,pb:1.3,div:4.1,beta:1.08,why:'Live Update από Capital.gr',live:false},
+  CENER:{n:'Cenergy Holdings',s:'Ενέργεια/Καλώδια',p:9.16,pr:9.08,lo:9.02,hi:9.22,w52:'6,80–11,40',cap:'1,12Δ',vol:'340Κ',cat:0,pe:11.4,pb:2.1,div:1.8,beta:1.15,why:'Live Update από Capital.gr',live:false},
+  GEKTE:{n:'GEK TERNA',s:'Κατασκευές/ΑΠΕ',p:22.10,pr:21.80,lo:21.90,hi:22.30,w52:'16,20–25,60',cap:'2,10Δ',vol:'380Κ',cat:0,pe:12.1,pb:1.8,div:2.2,beta:1.18,why:'Live Update από Capital.gr',live:false},
+  AEGN:{n:'Aegean Airlines',s:'Αεροπορία',p:12.44,pr:12.60,lo:12.30,hi:12.58,w52:'9,20–14,80',cap:'0,92Δ',vol:'310Κ',cat:1,pe:11.8,pb:2.2,div:3.2,beta:1.22,why:'Live Update από Capital.gr',live:false},
+  AVAX:{n:'ΑΒΑΞ ΑΕ',s:'Κατασκευές',p:5.18,pr:5.08,lo:5.12,hi:5.22,w52:'3,80–6,20',cap:'0,54Δ',vol:'480Κ',cat:1,pe:9.4,pb:1.1,div:2.0,beta:0.98,why:'Live Update από Capital.gr',live:false},
+  EXAE:{n:'ΕΧΑΕ (Χρηματιστήριο)',s:'Χρηματοοικονομικές',p:9.82,pr:9.70,lo:9.74,hi:9.90,w52:'7,80–11,40',cap:'0,65Δ',vol:'210Κ',cat:1,pe:15.2,pb:3.4,div:6.2,beta:0.68,why:'Live Update από Capital.gr',live:false},
+  EYAPS:{n:'ΕΥΔΑΠ ΑΕ',s:'Κοινή Ωφέλεια',p:6.84,pr:6.76,lo:6.78,hi:6.90,w52:'5,40–8,10',cap:'0,72Δ',vol:'180Κ',cat:1,pe:13.6,pb:1.8,div:4.8,beta:0.42,why:'Live Update από Capital.gr',live:false},
+  OLTH:{n:'ΟΛΘ Λιμένας Θεσ/νίκης',s:'Μεταφορές',p:31.20,pr:30.90,lo:30.80,hi:31.40,w52:'24,60–36,80',cap:'0,94Δ',vol:'38Κ',cat:1,pe:14.8,pb:2.8,div:4.2,beta:0.62,why:'Live Update από Capital.gr',live:false},
+  KRI:{n:'Κρι-Κρι ΑΕ',s:'Τρόφιμα',p:5.42,pr:5.36,lo:5.32,hi:5.48,w52:'4,00–6,50',cap:'0,31Δ',vol:'62Κ',cat:1,pe:20.2,pb:3.8,div:2.6,beta:0.48,why:'Live Update από Capital.gr',live:false},
+  OLPIR:{n:'ΟΛΠ Πειραιά',s:'Μεταφορές',p:19.80,pr:19.60,lo:19.50,hi:19.90,w52:'15,40–23,20',cap:'0,72Δ',vol:'55Κ',cat:1,pe:16.2,pb:3.2,div:3.8,beta:0.58,why:'Live Update από Capital.gr',live:false},
+  KARELIA:{n:'Καρέλια Τσιγαρά',s:'Καπνός',p:580.0,pr:574.0,lo:572.0,hi:584.0,w52:'480–640',cap:'2,10Δ',vol:'1,2Κ',cat:0,pe:15.4,pb:4.2,div:5.8,beta:0.32,why:'Live Update από Capital.gr',live:false},
+  INLOT:{n:'Ιντραλότ ΑΕ',s:'Τεχνολογία/Gaming',p:0.582,pr:0.571,lo:0.570,hi:0.592,w52:'0,40–0,82',cap:'0,88Δ',vol:'2,8Μ',cat:0,pe:22.0,pb:2.4,div:0.0,beta:1.68,why:'Live Update από Capital.gr',live:false},
+  MODA:{n:'Μοτοδυναμική ΑΕ',s:'Αυτοκίνητα',p:3.28,pr:3.22,lo:3.20,hi:3.32,w52:'2,40–4,10',cap:'0,18Δ',vol:'45Κ',cat:2,pe:10.8,pb:1.2,div:3.4,beta:0.78,why:'Live Update από Capital.gr',live:false},
+  BYTE:{n:'BYTE COMPUTER ΑΕ',s:'Πληροφορική',p:8.14,pr:8.02,lo:8.00,hi:8.20,w52:'6,20–9,80',cap:'0,08Δ',vol:'12Κ',cat:2,pe:18.6,pb:2.2,div:1.8,beta:0.62,why:'Live Update από Capital.gr',live:false},
+  IASO:{n:'ΙΑΣΩ ΑΕ',s:'Υγεία',p:1.96,pr:1.92,lo:1.90,hi:1.98,w52:'1,40–2,30',cap:'0,24Δ',vol:'88Κ',cat:2,pe:22.4,pb:1.8,div:1.2,beta:0.55,why:'Live Update από Capital.gr',live:false},
+  DOMIK:{n:'Δομική Κρήτης',s:'Κατασκευές',p:0.88,pr:0.86,lo:0.84,hi:0.90,w52:'0,62–1,10',cap:'0,04Δ',vol:'30Κ',cat:2,pe:8.4,pb:0.9,div:0.0,beta:1.10,why:'Live Update από Capital.gr',live:false},
+  FLEXO:{n:'Flexopack ΑΕ',s:'Βιομηχανία',p:14.60,pr:14.40,lo:14.30,hi:14.80,w52:'11,00–17,20',cap:'0,14Δ',vol:'8Κ',cat:2,pe:12.2,pb:1.9,div:2.8,beta:0.52,why:'Live Update από Capital.gr',live:false},
+  PPAK:{n:'Παπαπαναγιώτου ΑΕ',s:'Τρόφιμα',p:2.44,pr:2.38,lo:2.36,hi:2.46,w52:'1,80–2,90',cap:'0,06Δ',vol:'22Κ',cat:2,pe:14.0,pb:1.6,div:2.0,beta:0.70,why:'Live Update από Capital.gr',live:false},
+  PETRO:{n:'Petros Petropoulos ΑΕ',s:'Αυτοκίνητα',p:6.80,pr:6.72,lo:6.68,hi:6.88,w52:'5,20–8,00',cap:'0,09Δ',vol:'18Κ',cat:2,pe:9.8,pb:1.1,div:3.6,beta:0.65,why:'Live Update από Capital.gr',live:false}
+};
+var SYMS=Object.keys(DB);
+var CAT=['Μεγάλη Κεφαλαιοποίηση','Μεσαία Κεφαλαιοποίηση','Μικρή/Παράλληλη Αγορά'];
+var FB={price:35.40,prev:34.30,lo:34.30,hi:35.75,range52:'€33,00–€57,73',cap:'4,96Δ EUR'};
+
+var hist=[],sparks={},CH={},cdT=null,lastP=null;
+var aType='above',mSort='name';
+var alerts=[],holdings=[],watchlist=[],starred=[];
+var predSym='MTLN',pRange='1w';
+var aiOpen=false,aiTyping=false,aiHist=[];
+var darkMode=true;
+
+try{alerts=JSON.parse(localStorage.getItem('ap_al')||'[]');}catch(e){}
+try{holdings=JSON.parse(localStorage.getItem('ap_ho')||'[]');}catch(e){}
+try{watchlist=JSON.parse(localStorage.getItem('ap_wl')||'["MTLN","ETE","EUROB","OPAP","MYTIL"]');}catch(e){}
+try{starred=JSON.parse(localStorage.getItem('ap_st')||'[]');}catch(e){}
+try{darkMode=JSON.parse(localStorage.getItem('ap_th')||'true');}catch(e){}
+if(!holdings.length){holdings=[{sym:'MTLN',buy:35.2436,qty:25}];saveH();}
+if(!darkMode)document.body.classList.add('light');
+
+function f(n,d){if(d===undefined)d=2;return Number(n).toLocaleString('el-GR',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function sgn(v){return v>=0?'+':'';}
+function se(id,t){var e=g(id);if(e)e.textContent=t;}
+function saveH(){try{localStorage.setItem('ap_ho',JSON.stringify(holdings));}catch(e){}}
+function saveA(){try{localStorage.setItem('ap_al',JSON.stringify(alerts));}catch(e){}}
+function saveWL(){try{localStorage.setItem('ap_wl',JSON.stringify(watchlist));}catch(e){}}
+function toast(msg,t){var c=g('toasts');if(!c)return;var el=document.createElement('div');el.className='toast '+(t||'in');el.textContent=msg;c.appendChild(el);setTimeout(function(){if(el.parentNode)el.remove();},4200);}
+
+function toggleTheme(){darkMode=!darkMode;document.body.classList.toggle('light',!darkMode);try{localStorage.setItem('ap_th',JSON.stringify(darkMode));}catch(e){};var b=g('themeBtn');if(b)b.textContent=darkMode?'🌙':'☀️';}
+setInterval(function(){se('clkEl',new Date().toLocaleTimeString('el-GR',{hour:'2-digit',minute:'2-digit'}));},1000);
+
+/* ─── LIVE UPDATE LOGIC (PYTHON CONNECTION) ─── */
+var BACKEND_URL = 'http://127.0.0.1:5000';
+var liveConnected = false;
+var liveRetries = 0;
+
+async function updateLivePrices() {
+    console.log("Requesting prices from Python Server...");
+    g('sbarEl').innerHTML = '<span class="spin ld"></span><span class="ld">Ενημέρωση τιμών από naftemporiki/capital.gr...</span>';
+    try {
+        const response = await fetch(BACKEND_URL + '/api/prices', {signal: AbortSignal.timeout(12000)});
+        if (!response.ok) throw new Error('Server error: ' + response.status);
+
+        const result = await response.json();
+        const prices = result.prices || {};
+        const changes = result.changes || {};
+        const indices = result.indices || {};
+
+        let count = 0;
+        for (let symbol in prices) {
+            if (DB[symbol]) {
+                DB[symbol].pr = DB[symbol].p;
+                DB[symbol].p = prices[symbol];
+                DB[symbol].live = true;
+                if (changes[symbol] !== undefined) {
+                    var chPct = changes[symbol];
+                    DB[symbol].pr = DB[symbol].p / (1 + chPct/100);
+                }
+                count++;
+            }
+        }
+
+        // Update indices
+        if (indices.GD) se('idxGD', f(indices.GD));
+        if (indices.FTSE20) se('idxFT20', f(indices.FTSE20));
+
+        liveConnected = true;
+        liveRetries = 0;
+        refreshUI();
+
+        var timeStr = result.last_update || new Date().toLocaleTimeString('el-GR');
+        var srcInfo = count + '/' + result.total_stocks + ' μετοχές';
+        g('sbarEl').innerHTML = '<span class="ok">● Live: ' + srcInfo + ' ενημερώθηκαν ✓ (' + timeStr + ')</span>';
+
+        if (count === 0) {
+            g('sbarEl').innerHTML = '<span class="wn">● Server online αλλά δεν βρέθηκαν τιμές - αγορά κλειστή;</span>';
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        liveRetries++;
+        if (liveRetries <= 3) {
+            g('sbarEl').innerHTML = '<span class="spin bear"></span><span class="bear">Σύνδεση... (προσπάθεια ' + liveRetries + '/3) - Τρέξε: python ai_studio_code.py</span>';
+        } else {
+            g('sbarEl').innerHTML = '<span class="bear">● Offline - Χρήση στατικών τιμών. Τρέξε: python ai_studio_code.py</span>';
+        }
+    }
+}
+
+async function loadNews() {
+    var con = g('newsCon');
+    if (!con) return;
+    con.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3)"><span class="spin ld"></span> Φόρτωση νέων...</div>';
+    try {
+        var resp = await fetch(BACKEND_URL + '/api/news', {signal: AbortSignal.timeout(10000)});
+        var data = await resp.json();
+        var news = data.news || [];
+        if (news.length === 0) {
+            con.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t3)">Δεν βρέθηκαν νέα. Τρέξε τον Python server.</div>';
+            return;
+        }
+        var html = '';
+        news.forEach(function(item) {
+            var src = item.source || 'unknown';
+            var srcColor = src.includes('capital') ? 'var(--a)' : 'var(--lav)';
+            html += '<a href="' + item.link + '" target="_blank" rel="noopener" style="display:block;padding:11px 12px;margin-bottom:6px;background:var(--surf);border:1px solid var(--b1);border-radius:var(--r2);text-decoration:none;color:var(--t1);transition:all .15s;border-left:3px solid ' + srcColor + '">';
+            html += '<div style="font-size:.72rem;line-height:1.5;font-weight:600;margin-bottom:4px">' + item.title + '</div>';
+            html += '<div style="display:flex;justify-content:space-between;align-items:center">';
+            html += '<span style="font-family:var(--fm);font-size:.4rem;color:' + srcColor + ';letter-spacing:1px;text-transform:uppercase">' + src + '</span>';
+            html += '</div></a>';
+        });
+        con.innerHTML = html;
+        if (data.last_update) se('newsTime', 'Ενημ: ' + data.last_update);
+    } catch(e) {
+        con.innerHTML = '<div style="text-align:center;padding:20px;color:var(--bear)">Σφάλμα φόρτωσης νέων. Βεβαιωθείτε ότι ο Python server τρέχει.</div>';
+    }
+}
+
+function addWL() {
+    var sym = g('wlSel').value;
+    if (!sym) return;
+    if (watchlist.indexOf(sym) === -1) {
+        watchlist.push(sym);
+        saveWL();
+        renderWL();
+        toast(sym + ' προστέθηκε στο Watchlist', 'ok');
+    } else {
+        toast(sym + ' υπάρχει ήδη', 'wn');
+    }
+}
+
+function removeWL(sym) {
+    watchlist = watchlist.filter(function(s) { return s !== sym; });
+    saveWL();
+    renderWL();
+    toast(sym + ' αφαιρέθηκε', 'in');
+}
+
+function refreshUI() {
+    buildTape();
+    if (g('view-dash').classList.contains('on')) renderDash({price:DB.MTLN.p, prev:DB.MTLN.pr, lo:DB.MTLN.lo, hi:DB.MTLN.hi, range52:FB.range52, cap:FB.cap});
+    if (g('view-market').classList.contains('on')) renderMkt();
+    if (g('view-port').classList.contains('on')) renderPort();
+    renderWL();
+    if (predSym && DB[predSym]) runPred();
+}
+
+function gT(id){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  var v=g('view-'+id);if(v)v.classList.add('on');
+  var t=document.querySelector('[data-t="'+id+'"]');if(t)t.classList.add('on');
+  if(id==='market')renderMkt();
+  if(id==='watchlist')renderWL();
+  if(id==='port')renderPort();
+  if(id==='pred')runPred();
+  if(id==='news')loadNews();
+  if(id==='alerts')renderAlerts();
+}
+
+function buildTape(){
+    var h='';
+    SYMS.forEach(function(s){
+        var d=DB[s], ch=d.p-d.pr, up=ch>=0;
+        h+='<div class="ti" onclick="openDet(\''+s+'\')"><span style="color:var(--t2)">'+s+'</span><span style="font-weight:500;margin:0 2px"> €'+f(d.p)+'</span><span class="'+(up?'bull':'bear')+'"> '+sgn(ch)+f((ch/d.pr)*100)+'%</span></div>';
+    });
+    g('tapeEl').innerHTML=h+h;
+}
+
+function renderDash(d){
+    var buy=parseFloat(g('inBuy').value)||35.2436, qty=parseFloat(g('inQty').value)||25;
+    var cost=buy*qty, val=d.price*qty, pnl=val-cost, pct=(d.price-buy)/buy*100;
+    var ch=d.price-d.prev, chP=ch/d.prev*100, up=ch>=0;
+    g('vP').textContent='€'+f(d.price); g('vP').className='hero-price '+(up?'bull':'bear');
+    g('vC').textContent=sgn(ch)+'€'+f(ch)+' ('+sgn(chP)+f(chP)+'%)'; g('vC').className='hero-chg '+(up?'bull':'bear');
+    se('vT',new Date().toLocaleTimeString('el-GR')+' · Live');
+    se('hPrev','€'+f(d.prev)); se('hRange','€'+f(d.lo)+'–'+f(d.hi)); se('h52w',d.range52); se('hCap',d.cap);
+    var pos=pnl>=0;
+    se('kvV','€'+f(val)); se('kvC','Κόστος: €'+f(cost));
+    g('kvP').textContent=(pnl>=0?'+':'')+f(pnl)+'€'; g('kvP').className='kv '+(pos?'bull':'bear');
+    g('kvPc').textContent=sgn(pct)+f(pct)+'%'; g('kvPc').className='kv '+(pos?'bull':'bear');
+    buildBar(cost,val,pos);
+    buildPie(cost,pnl,pos);
+}
+
+function renderPort(){
+    var tv=0, tc=0;
+    var items=holdings.map(function(h, idx){
+        var d=DB[h.sym]||{p:h.buy};
+        var val=d.p*h.qty, cost=h.buy*h.qty, pnl=val-cost, pct=(d.p-h.buy)/h.buy*100;
+        tv+=val; tc+=cost;
+        return {sym:h.sym, qty:h.qty, buy:h.buy, p:d.p, val:val, cost:cost, pnl:pnl, pct:pct, idx:idx};
+    });
+    se('psT','€ '+f(tv)); se('psC','€'+f(tc));
+    var totalPnl = tv-tc;
+    var totalPct = tc > 0 ? (totalPnl/tc)*100 : 0;
+    g('psP').textContent=(totalPnl>=0?'+':'')+f(totalPnl)+'€';
+    g('psP').className=(totalPnl>=0?'bull':'bear');
+    var psPcEl = g('psPc');
+    if(psPcEl){psPcEl.textContent=(totalPnl>=0?'+':'')+f(totalPct)+'%';psPcEl.className=(totalPnl>=0?'bull':'bear');}
+    var hl=g('holdEl'); hl.innerHTML='';
+    items.forEach(function(item){
+        var div=document.createElement('div');
+        div.className='hc';
+        var liveTag = DB[item.sym] && DB[item.sym].live ? '<span style="font-family:var(--fm);font-size:.36rem;color:var(--a);margin-left:5px">LIVE</span>' : '';
+        div.innerHTML='<div style="display:flex;justify-content:space-between;padding:10px 12px;align-items:center">' +
+            '<div style="flex:1;cursor:pointer" onclick="openDet(\'' + item.sym + '\')">' +
+                '<div style="font-weight:700;color:var(--a)">' + item.sym + liveTag + '</div>' +
+                '<div style="font-size:.55rem;color:var(--t2)">' + (DB[item.sym]?DB[item.sym].n:item.sym) + '</div>' +
+                '<div style="font-size:.5rem;color:var(--t3)">Αγορά: €' + f(item.buy,4) + ' x ' + item.qty + ' τμχ</div>' +
+            '</div>' +
+            '<div style="text-align:right;margin-right:8px">' +
+                '<div style="font-weight:700">€' + f(item.val) + '</div>' +
+                '<div class="' + (item.pnl>=0?'bull':'bear') + '" style="font-weight:600">' + (item.pnl>=0?'+':'') + f(item.pnl) + '€</div>' +
+                '<div class="' + (item.pnl>=0?'bull':'bear') + '" style="font-size:.5rem">' + (item.pct>=0?'+':'') + f(item.pct) + '%</div>' +
+            '</div>' +
+            '<button onclick="removeHolding(' + item.idx + ')" style="width:24px;height:24px;border-radius:6px;background:var(--deep);border:1px solid var(--b1);color:var(--bear);cursor:pointer;font-size:.7rem;flex-shrink:0" title="Διαγραφή">✕</button>' +
+        '</div>';
+        hl.appendChild(div);
+    });
+}
+
+function removeHolding(idx) {
+    holdings.splice(idx, 1);
+    saveH();
+    renderPort();
+    toast('Θέση αφαιρέθηκε', 'in');
+}
+
+function renderMkt(){
+    var con=g('mktCon'); con.innerHTML='';
+    SYMS.forEach(function(sym){
+        var d=DB[sym], ch=d.p-d.pr, up=ch>=0;
+        var row=document.createElement('div');
+        row.className='srow '+(up?'bull-r':'bear-r');
+        row.innerHTML=`<div style="flex:1"><strong>${sym}</strong><div style="font-size:.6rem">${d.n}</div></div>
+                       <div style="text-align:right"><div class="${up?'bull':'bear'}">€${f(d.p)}</div></div>`;
+        row.onclick=function(){openDet(sym);};
+        con.appendChild(row);
+    });
+}
+
+function renderWL(){
+    var con=g('wlCon'); con.innerHTML='';
+    if(watchlist.length===0){
+        con.innerHTML='<div style="text-align:center;padding:20px;color:var(--t3);font-size:.7rem">Watchlist κενό. Προσθέστε μετοχές.</div>';
+        return;
+    }
+    watchlist.forEach(function(sym){
+        var d=DB[sym]; if(!d) return;
+        var ch=d.p-d.pr, chPct=d.pr?((ch/d.pr)*100):0, up=ch>=0;
+        var liveTag = d.live ? ' <span style="font-family:var(--fm);font-size:.34rem;color:var(--a)">LIVE</span>' : '';
+        var row=document.createElement('div');
+        row.className='wl-item';
+        row.innerHTML='<div style="flex:1;cursor:pointer" onclick="openDet(\'' + sym + '\')">' +
+            '<div><strong style="color:var(--a)">' + sym + '</strong>' + liveTag + '</div>' +
+            '<div style="font-size:.55rem;color:var(--t2)">' + d.n + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;margin-right:8px">' +
+            '<div style="font-weight:600">€' + f(d.p) + '</div>' +
+            '<div class="' + (up?'bull':'bear') + '" style="font-size:.5rem;font-weight:600">' + sgn(ch) + f(chPct) + '%</div>' +
+        '</div>' +
+        '<button onclick="event.stopPropagation();removeWL(\'' + sym + '\')" style="width:22px;height:22px;border-radius:5px;background:var(--deep);border:1px solid var(--b1);color:var(--t3);cursor:pointer;font-size:.6rem;flex-shrink:0" title="Αφαίρεση">✕</button>';
+        con.appendChild(row);
+    });
+}
+
+function scoreStock(sym){
+    var d=DB[sym];
+    var score = 50 + (Math.random()*20 - 10); 
+    var rec = score > 60 ? 'buy' : (score < 40 ? 'sell' : 'hold');
+    return {score: Math.round(score), rec: rec};
+}
+
+function runPred(){
+    var sym=predSym; var d=DB[sym]; var sc=scoreStock(sym);
+    g('scoreNum').textContent=sc.score;
+    g('scoreNum').style.color=sc.rec==='buy'?'var(--bull)':sc.rec==='sell'?'var(--bear)':'var(--gold)';
+    se('aiTitle','Ανάλυση '+sym+' — '+d.n);
+    var needle = g('gNeedle');
+    if(needle) needle.style.transform = `rotate(${-90 + (sc.score/100)*180}deg)`;
+}
+
+function openDet(sym){
+    var d=DB[sym];
+    g('detOv').classList.add('open');
+    se('dSym',sym); se('dCo',d.n);
+    g('dPrice').textContent='€'+f(d.p);
+    g('dChg').textContent='Live από Capital.gr';
+}
+
+function closeDet(){ g('detOv').classList.remove('open'); }
+function toggleAI(){ aiOpen=!aiOpen; g('aiPanel').classList.toggle('open',aiOpen); }
+
+function buildBar(cost,val,pos){
+    var cv=g('cBar'); if(!cv)return;
+    if(CH.bar){CH.bar.destroy();}
+    CH.bar=new Chart(cv, {type:'bar', data:{labels:['Κόστος','Αξία'], datasets:[{data:[cost,val], backgroundColor:['rgba(60,200,245,.4)', 'rgba(0,240,124,.4)'], borderColor:['#3cc8f5', '#00f07c'], borderWidth:1}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#182236'}}, x:{grid:{display:false}}}}});
+}
+
+function buildPie(cost,pnl,pos){
+    var cv=g('cPie'); if(!cv)return;
+    if(CH.pie){CH.pie.destroy();}
+    CH.pie=new Chart(cv, {type:'doughnut', data:{labels:['Κόστος','Κέρδος'], datasets:[{data:[cost,Math.abs(pnl)||1], backgroundColor:['#3cc8f5',pos?'#00f07c':'#ff3256']}]}, options:{plugins:{legend:{display:false}}, cutout:'70%'}});
+}
+
+function aiSend(){
+    var inp=g('aiInp'); if(!inp)return;
+    var msg=inp.value.trim(); if(!msg)return;
+    inp.value='';
+    var msgs=g('aiMsgs');
+    msgs.innerHTML+='<div class="msg usr"><div class="msg-b">'+msg+'</div><div class="msg-t">'+new Date().toLocaleTimeString('el-GR')+'</div></div>';
+    msgs.innerHTML+='<div class="typing" id="aiTyp"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+    msgs.scrollTop=msgs.scrollHeight;
+
+    setTimeout(function(){
+        var typ=g('aiTyp'); if(typ)typ.remove();
+        var reply = generateAIReply(msg);
+        msgs.innerHTML+='<div class="msg bot"><div class="msg-b">'+reply+'</div><div class="msg-t">AI · '+new Date().toLocaleTimeString('el-GR')+'</div></div>';
+        msgs.scrollTop=msgs.scrollHeight;
+    }, 800 + Math.random()*1200);
+}
+
+function generateAIReply(q){
+    q=q.toLowerCase();
+    var topStocks=SYMS.filter(function(s){return DB[s].p>DB[s].pr;}).sort(function(a,b){return ((DB[b].p-DB[b].pr)/DB[b].pr)-((DB[a].p-DB[a].pr)/DB[a].pr);});
+    var bottomStocks=SYMS.filter(function(s){return DB[s].p<DB[s].pr;}).sort(function(a,b){return ((DB[a].p-DB[a].pr)/DB[a].pr)-((DB[b].p-DB[b].pr)/DB[b].pr);});
+
+    if(q.includes('20%') || q.includes('ανεβ')){
+        var picks=topStocks.slice(0,5);
+        var r='Οι μετοχές με τη μεγαλύτερη δυναμική σήμερα:\n\n';
+        picks.forEach(function(s,i){var d=DB[s];var ch=((d.p-d.pr)/d.pr*100);r+=(i+1)+'. '+s+' ('+d.n+'): €'+f(d.p)+' | '+sgn(ch)+f(ch)+'%\n';});
+        r+='\nΠροσοχή: Οι προβλέψεις βασίζονται σε τεχνική ανάλυση, όχι σε εγγύηση απόδοσης.';
+        return r;
+    }
+    if(q.includes('top') || q.includes('αγορ') || q.includes('picks')){
+        var picks=topStocks.slice(0,5);
+        var r='Top 5 μετοχές σήμερα:\n\n';
+        picks.forEach(function(s,i){var d=DB[s];r+=(i+1)+'. '+s+': €'+f(d.p)+'\n';});
+        return r;
+    }
+    if(q.includes('χαρτοφυλάκι') || q.includes('portfolio')){
+        if(!holdings.length) return 'Δεν έχετε θέσεις στο χαρτοφυλάκιο. Προσθέστε μετοχές από το tab Portfolio.';
+        var tv=0,tc=0;
+        holdings.forEach(function(h){var d=DB[h.sym]||{p:h.buy};tv+=d.p*h.qty;tc+=h.buy*h.qty;});
+        var pnl=tv-tc,pct=tc>0?(pnl/tc*100):0;
+        var r='Χαρτοφυλάκιο:\n\n';
+        r+='Συνολική αξία: €'+f(tv)+'\n';
+        r+='Κόστος: €'+f(tc)+'\n';
+        r+='P&L: '+(pnl>=0?'+':'')+f(pnl)+'€ ('+(pct>=0?'+':'')+f(pct)+'%)\n\n';
+        holdings.forEach(function(h){var d=DB[h.sym]||{p:h.buy};var v=d.p*h.qty;r+=h.sym+': '+h.qty+' τμχ x €'+f(d.p)+' = €'+f(v)+'\n';});
+        return r;
+    }
+    if(q.includes('πτωσ') || q.includes('πεσ') || q.includes('bear')){
+        var picks=bottomStocks.slice(0,5);
+        var r='Μετοχές σε πτώση σήμερα:\n\n';
+        picks.forEach(function(s,i){var d=DB[s];var ch=((d.p-d.pr)/d.pr*100);r+=(i+1)+'. '+s+': €'+f(d.p)+' ('+f(ch)+'%)\n';});
+        return r;
+    }
+    // Check if asking about a specific stock
+    for(var i=0;i<SYMS.length;i++){
+        var s=SYMS[i];
+        if(q.includes(s.toLowerCase()) || q.includes(DB[s].n.toLowerCase())){
+            var d=DB[s];var ch=d.p-d.pr;var chP=d.pr?(ch/d.pr*100):0;
+            return s+' - '+d.n+'\n\nΤιμή: €'+f(d.p)+'\nΜεταβολή: '+sgn(ch)+f(ch)+'€ ('+sgn(chP)+f(chP)+'%)\nP/E: '+d.pe+'\nDiv Yield: '+d.div+'%\nBeta: '+d.beta+'\n\nΚλάδος: '+d.s;
+        }
+    }
+    return 'Μπορώ να σας βοηθήσω με:\n- Ανάλυση συγκεκριμένης μετοχής (π.χ. "MTLN")\n- Top μετοχές σήμερα\n- Ανάλυση χαρτοφυλακίου\n- Μετοχές σε πτώση\n\nΤι θα θέλατε;';
+}
+
+function createAlert(){
+    var sym=g('alSym').value; var val=parseFloat(g('alVal').value);
+    if(isNaN(val)) return toast('Βάλτε τιμή','wn');
+    alerts.push({sym:sym, val:val, fired:false});
+    saveA(); renderAlerts();
+}
+
+function renderAlerts(){
+    var ae=g('alertEl'); ae.innerHTML='';
+    alerts.forEach(function(a){
+        var div=document.createElement('div');
+        div.className='al-item';
+        div.innerHTML=`<div><strong>${a.sym}</strong> Στόχος: €${f(a.val)}</div>`;
+        ae.appendChild(div);
+    });
+}
+
+function openM(){ g('modal').classList.add('open'); }
+function closeM(){ g('modal').classList.remove('open'); }
+function addHolding(){
+    var sym=g('mSym').value, buy=parseFloat(g('mBuy').value), qty=parseFloat(g('mQty').value);
+    if(!sym || isNaN(buy) || isNaN(qty)) return toast('Συμπλήρωσε τα πεδία','wn');
+    holdings.push({sym:sym, buy:buy, qty:qty});
+    saveH(); closeM(); renderPort();
+}
+
+/* ─── STARTUP ─── */
+setInterval(updateLivePrices, 60000);
+window.onload = function(){
+    buildTape();
+    gT('dash');
+    var opts='';
+    SYMS.forEach(function(s){opts+='<option value="'+s+'">'+s+' - '+DB[s].n+'</option>';});
+    if(g('wlSel'))g('wlSel').innerHTML=opts;
+    if(g('predSel'))g('predSel').innerHTML=opts;
+    if(g('alSym'))g('alSym').innerHTML=opts;
+    if(g('mSym'))g('mSym').innerHTML=opts;
+    renderDash({price:DB.MTLN.p, prev:DB.MTLN.pr, lo:DB.MTLN.lo, hi:DB.MTLN.hi, range52:FB.range52, cap:FB.cap});
+    updateLivePrices();
+    // Load news on first visit
+    setTimeout(function(){ loadNews(); }, 3000);
+};
+function recalc(){
+    if(DB.MTLN) renderDash({price:DB.MTLN.p, prev:DB.MTLN.pr, lo:DB.MTLN.lo, hi:DB.MTLN.hi, range52:FB.range52, cap:FB.cap});
+}
+</script>
+</body>
+</html>
