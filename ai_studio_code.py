@@ -194,23 +194,25 @@ def get_stocks():
         "PEIR": "Πειραιώς", "PRD": "ΠΡΔ", "PRONTON": "Προντέα"
     }
     
+    data_dict = {}
     for symbol, stock_data in prices.items():
         if isinstance(stock_data, dict):
-            stocks_list.append({
-                "symbol": symbol,
-                "name": stock_names.get(symbol, symbol),
-                "price": stock_data.get('price', 0),
-                "change": stock_data.get('change', 0),
-                "changePercent": stock_data.get('changePercent', 0),
-                "open": stock_data.get('open', stock_data.get('price', 0)),
-                "high": stock_data.get('high', stock_data.get('price', 0)),
-                "low": stock_data.get('low', stock_data.get('price', 0)),
-                "volume": stock_data.get('volume', 0)
-            })
-    
+            data_dict[symbol] = {
+                "current": {
+                    "price": stock_data.get('price', 0),
+                    "prev": stock_data.get('prev', stock_data.get('price', 0)),
+                    "change": stock_data.get('change', 0),
+                    "changePercent": stock_data.get('changePercent', 0),
+                    "open": stock_data.get('open', stock_data.get('price', 0)),
+                    "high": stock_data.get('high', stock_data.get('price', 0)),
+                    "low": stock_data.get('low', stock_data.get('price', 0)),
+                    "volume": stock_data.get('volume', 0)
+                }
+            }
+
     return jsonify({
-        "stocks": stocks_list,
-        "count": len(stocks_list),
+        "data": data_dict,
+        "count": len(data_dict),
         "lastUpdate": app.prices_data['last_update']
     })
 
